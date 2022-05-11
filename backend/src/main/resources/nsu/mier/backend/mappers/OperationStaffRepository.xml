@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="nsu.mier.backend.repositories.OperationStaffRepository">
+    <resultMap id="BaseResultMap" type="nsu.mier.backend.entities.OperationStaff">
+        <!--@JPA.Support generated on 2022-05-11 23:44:27.-->
+        <!--@Table operation_staff-->
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="num_of_surgeries" jdbcType="INTEGER" property="numOfSurgeries"/>
+        <result column="num_of_fatal_surgeries" jdbcType="INTEGER" property="numOfFatalSurgeries"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+    <!--@JPA.Support generated on 2022-05-11 23:44:27.-->    id, num_of_surgeries, num_of_fatal_surgeries
+    </sql
+    >
+</mapper>

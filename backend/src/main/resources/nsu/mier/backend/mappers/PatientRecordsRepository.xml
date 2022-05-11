@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="nsu.mier.backend.repositories.PatientRecordsRepository">
+    <resultMap id="BaseResultMap" type="nsu.mier.backend.entities.PatientRecords">
+        <!--@JPA.Support generated on 2022-05-11 23:44:30.-->
+        <!--@Table patient_records-->
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="patient_id" jdbcType="INTEGER" property="patientId"/>
+        <result column="medical_institution_id" jdbcType="INTEGER" property="medicalInstitutionId"/>
+        <result column="data" jdbcType="VARCHAR" property="data"/>
+        <result column="type" jdbcType="VARCHAR" property="type"/>
+        <result column="date" jdbcType="TIMESTAMP" property="date"/>
+        <result column="doctor_id" jdbcType="INTEGER" property="doctorId"/>
+        <result column="hospital_room_id" jdbcType="INTEGER" property="hospitalRoomId"/>
+        <result column="cabinet" jdbcType="INTEGER" property="cabinet"/>
+        <result column="grouping" jdbcType="INTEGER" property="grouping"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+    <!--@JPA.Support generated on 2022-05-11 23:44:30.-->    id, patient_id, medical_institution_id, `data`, `type`,
+        `date`, doctor_id, hospital_room_id, cabinet, `grouping`
+    </sql
+    >
+</mapper>

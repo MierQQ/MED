@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="nsu.mier.backend.repositories.LabMedicalInstitutionRepository">
+    <resultMap id="BaseResultMap" type="nsu.mier.backend.entities.LabMedicalInstitution">
+        <!--@JPA.Support generated on 2022-05-11 23:44:21.-->
+        <!--@Table lab_medical_institution-->
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="medical_institution_id" jdbcType="INTEGER" property="medicalInstitutionId"/>
+        <result column="laboratory_id" jdbcType="INTEGER" property="laboratoryId"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+    <!--@JPA.Support generated on 2022-05-11 23:44:21.-->    id, medical_institution_id, laboratory_id
+    </sql
+    >
+</mapper>

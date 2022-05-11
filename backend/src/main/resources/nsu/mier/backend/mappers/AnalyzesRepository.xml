@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="nsu.mier.backend.repositories.AnalyzesRepository">
+    <resultMap id="BaseResultMap" type="nsu.mier.backend.entities.Analyzes">
+        <!--@JPA.Support generated on 2022-05-11 23:44:15.-->
+        <!--@Table analyzes-->
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="record" jdbcType="INTEGER" property="record"/>
+        <result column="lab_id" jdbcType="INTEGER" property="labId"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+    <!--@JPA.Support generated on 2022-05-11 23:44:15.-->    id, record, lab_id
+    </sql
+    >
+</mapper>

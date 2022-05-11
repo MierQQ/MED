@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="nsu.mier.backend.repositories.PolyclinicFixingRepository">
+    <resultMap id="BaseResultMap" type="nsu.mier.backend.entities.PolyclinicFixing">
+        <!--@JPA.Support generated on 2022-05-11 23:44:34.-->
+        <!--@Table polyclinic_fixing-->
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="polyclinic_id" jdbcType="INTEGER" property="polyclinicId"/>
+        <result column="hospital_id" jdbcType="INTEGER" property="hospitalId"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        <!--@JPA.Support generated on 2022-05-11 23:44:34.-->
+        id, polyclinic_id, hospital_id
+    </sql>
+</mapper>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="nsu.mier.backend.repositories.CabinetsRepository">
+    <resultMap id="BaseResultMap" type="nsu.mier.backend.entities.Cabinets">
+        <!--@JPA.Support generated on 2022-05-11 23:44:16.-->
+        <!--@Table cabinets-->
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="polyclinic_id" jdbcType="INTEGER" property="polyclinicId"/>
+        <result column="number" jdbcType="INTEGER" property="number"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+    <!--@JPA.Support generated on 2022-05-11 23:44:16.-->    id, polyclinic_id, `number`
+    </sql
+    >
+</mapper>
