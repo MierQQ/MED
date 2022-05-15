@@ -1,10 +1,11 @@
 package nsu.mier.backend.servises;
 
 import nsu.mier.backend.DTOs.StaffDTO;
+import nsu.mier.backend.DTOs.StaffProductivityDTO;
+import nsu.mier.backend.DTOs.StaffQueryDTO;
 import nsu.mier.backend.VOs.StaffQueryVO;
 import nsu.mier.backend.VOs.StaffUpdateVO;
 import nsu.mier.backend.VOs.StaffVO;
-import nsu.mier.backend.entities.BuildingBody;
 import nsu.mier.backend.entities.Staff;
 import nsu.mier.backend.repositories.StaffRepository;
 import org.springframework.beans.BeanUtils;
@@ -64,5 +65,17 @@ public class StaffService {
 
     public List<Staff> getAll() {
         return staffRepository.findAll();
+    }
+
+    public List<StaffQueryDTO> findQuery2(String institutionIds, String specializations) {
+        return staffRepository.findQuery2(institutionIds, specializations);
+    }
+
+    public List<StaffProductivityDTO> findQuery11(String startDate, String endDate, String doctorIds, String specializations, String polyclinicIds) {
+        return staffRepository.findQuery11(startDate, endDate, doctorIds, specializations, polyclinicIds);
+    }
+
+    public List<StaffProductivityDTO> findQuery12(String doctorIds, String specializations, String hospitalIds) {
+        return staffRepository.findQuery12(doctorIds, specializations, hospitalIds);
     }
 }

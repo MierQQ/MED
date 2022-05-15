@@ -1,5 +1,8 @@
 package nsu.mier.backend.servises;
 
+import nsu.mier.backend.DTOs.LabProductivityDTO;
+import nsu.mier.backend.DTOs.PatientNameDTO;
+import nsu.mier.backend.DTOs.PatientQuery6DTO;
 import nsu.mier.backend.DTOs.PatientRecordsDTO;
 import nsu.mier.backend.VOs.PatientRecordsQueryVO;
 import nsu.mier.backend.VOs.PatientRecordsUpdateVO;
@@ -12,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -64,5 +68,25 @@ public class PatientRecordsService {
 
     public List<PatientRecords> getAll() {
         return patientRecordsRepository.findAll();
+    }
+
+    public List<PatientQuery6DTO> findQuery6(String hospitalIds, String departmentIds, String hospitalRoomIds) {
+        return patientRecordsRepository.findQuery6(hospitalIds, departmentIds, hospitalRoomIds);
+    }
+
+    public List<PatientNameDTO> findQuery7(String institutionIds, String medStaffIds, String startDate, String endDate) {
+        return patientRecordsRepository.findQuery7(institutionIds, medStaffIds, startDate, endDate);
+    }
+
+    public List<PatientNameDTO> findQuery8(String specializations, String institutionIds) {
+        return patientRecordsRepository.findQuery8(specializations, institutionIds);
+    }
+
+    public List<PatientNameDTO> findQuery13(String startDate, String endDate, String doctorIds, String medIds) {
+        return patientRecordsRepository.findQuery13(startDate, endDate, doctorIds, medIds);
+    }
+
+    public List<LabProductivityDTO> findQuery14(String startDate, String endDate, String medIds) {
+        return patientRecordsRepository.findQuery14(startDate, endDate, medIds);
     }
 }

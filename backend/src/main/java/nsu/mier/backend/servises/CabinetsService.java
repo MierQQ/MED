@@ -1,6 +1,9 @@
 package nsu.mier.backend.servises;
 
+import nsu.mier.backend.DTOs.CabinetCountDTO;
 import nsu.mier.backend.DTOs.CabinetsDTO;
+import nsu.mier.backend.DTOs.CountDTO;
+import nsu.mier.backend.DTOs.PatientNameDTO;
 import nsu.mier.backend.VOs.CabinetsQueryVO;
 import nsu.mier.backend.VOs.CabinetsUpdateVO;
 import nsu.mier.backend.VOs.CabinetsVO;
@@ -64,5 +67,13 @@ public class CabinetsService {
 
     public List<Cabinets> getAll() {
         return cabinetsRepository.findAll();
+    }
+
+    public List<CountDTO> findQuery101(String institutionIds) {
+        return cabinetsRepository.findQuery101(institutionIds);
+    }
+
+    public List<CabinetCountDTO> findQuery102(String startDate, String endDate) {
+        return cabinetsRepository.findQuery102(startDate, endDate);
     }
 }

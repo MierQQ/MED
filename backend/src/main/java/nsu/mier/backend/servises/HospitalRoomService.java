@@ -1,5 +1,7 @@
 package nsu.mier.backend.servises;
 
+import nsu.mier.backend.DTOs.CountDTO;
+import nsu.mier.backend.DTOs.DepartmentCountDTO;
 import nsu.mier.backend.DTOs.HospitalRoomDTO;
 import nsu.mier.backend.VOs.HospitalRoomQueryVO;
 import nsu.mier.backend.VOs.HospitalRoomUpdateVO;
@@ -64,5 +66,29 @@ public class HospitalRoomService {
 
     public List<HospitalRoom> getAll() {
         return hospitalRoomRepository.findAll();
+    }
+
+    public List<CountDTO> findQuery91() {
+        return hospitalRoomRepository.findQuery91();
+    }
+
+    public List<CountDTO> findQuery92() {
+        return hospitalRoomRepository.findQuery92();
+    }
+
+    public List<DepartmentCountDTO> findQuery93() {
+        return hospitalRoomRepository.findQuery93();
+    }
+
+    public List<DepartmentCountDTO> findQuery94() {
+        return hospitalRoomRepository.findQuery94();
+    }
+
+    public List<DepartmentCountDTO> findQuery95() {
+        return hospitalRoomRepository.findQuery95();
+    }
+
+    public List<DepartmentCountDTO> findQuery96() {
+        return hospitalRoomRepository.findQuery96();
     }
 }

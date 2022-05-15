@@ -1,10 +1,10 @@
 package nsu.mier.backend.servises;
 
 import nsu.mier.backend.DTOs.MedStaffDTO;
+import nsu.mier.backend.DTOs.StaffQueryDTO;
 import nsu.mier.backend.VOs.MedStaffQueryVO;
 import nsu.mier.backend.VOs.MedStaffUpdateVO;
 import nsu.mier.backend.VOs.MedStaffVO;
-import nsu.mier.backend.entities.BuildingBody;
 import nsu.mier.backend.entities.MedStaff;
 import nsu.mier.backend.repositories.MedStaffRepository;
 import org.springframework.beans.BeanUtils;
@@ -64,5 +64,21 @@ public class MedStaffService {
 
     public List<MedStaff> getAll() {
         return medStaffRepository.findAll();
+    }
+
+    public List<StaffQueryDTO> findQuery1(String institutionIds, String specializations) {
+        return medStaffRepository.findQuery1(institutionIds, specializations);
+    }
+
+    public List<StaffQueryDTO> findQuery3(String institutionIds, String specializations, Integer surgeriesNumber) {
+        return medStaffRepository.findQuery3(institutionIds, specializations, surgeriesNumber);
+    }
+
+    public List<StaffQueryDTO> findQuery4(String institutionIds, String specializations, Integer standing) {
+        return medStaffRepository.findQuery4(institutionIds, specializations, standing);
+    }
+
+    public List<StaffQueryDTO> findQuery5(String institutionIds, String specializations) {
+        return medStaffRepository.findQuery5(institutionIds, specializations);
     }
 }
