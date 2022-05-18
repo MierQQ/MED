@@ -17,6 +17,25 @@ import Query13 from "./components/containers/Queries/Query13";
 import Query14 from "./components/containers/Queries/Query14";
 import Analyzes from "./components/containers/Tables/Analyzes";
 import Patient from "./components/containers/Tables/Patient";
+import BuildingBody from "./components/containers/Tables/BuildingBody";
+import Cabinets from "./components/containers/Tables/Cabinets";
+import Department from "./components/containers/Tables/Department";
+import Hospital from "./components/containers/Tables/Hospital";
+import HospitalRoom from "./components/containers/Tables/HospitalRoom";
+import HospitalRoomExpiring from "./components/containers/Tables/HospitalRoomExpiring";
+import LabMedicalInstitution from "./components/containers/Tables/LabMedicalInstitution";
+import Laboratory from "./components/containers/Tables/Laboratory";
+import MedicalInstitution from "./components/containers/Tables/MedicalInstitution";
+import MedStaff from "./components/containers/Tables/MedStaff";
+import MedStaffPatient from "./components/containers/Tables/MedStaffPatient";
+import OperationStaff from "./components/containers/Tables/OperationStaff";
+import PatientRecords from "./components/containers/Tables/PatientRecords";
+import Polyclinic from "./components/containers/Tables/Polyclinic";
+import PolyclinicFixing from "./components/containers/Tables/PolyclinicFixing";
+import ProfessorOrDocent from "./components/containers/Tables/ProfessorOrDocent";
+import ProfOrDocentMedicalInstitution from "./components/containers/Tables/ProfOrDocentMedicalInstitution";
+import Staff from "./components/containers/Tables/Staff";
+import StaffMedicalInstitution from "./components/containers/Tables/StaffMedicalInstitution";
 
 function App() {
     let [containerKey, setContainerKey] = useState();
@@ -39,6 +58,25 @@ function App() {
             "14": <Query14/>,
             "Analyzes": <Analyzes/>,
             "Patient": <Patient/>,
+            "BuildingBody": <BuildingBody/>,
+            "Cabinets": <Cabinets/>,
+            "Department": <Department/>,
+            "Hospital": <Hospital/>,
+            "HospitalRoom": <HospitalRoom/>,
+            "HospitalRoomExpiring": <HospitalRoomExpiring/>,
+            "LabMedicalInstitution": <LabMedicalInstitution/>,
+            "Laboratory": <Laboratory/>,
+            "MedicalInstitution": <MedicalInstitution/>,
+            "MedStaff": <MedStaff/>,
+            "MedStaffPatient": <MedStaffPatient/>,
+            "OperationStaff": <OperationStaff/>,
+            "PatientRecords": <PatientRecords/>,
+            "Polyclinic": <Polyclinic/>,
+            "PolyclinicFixing": <PolyclinicFixing/>,
+            "ProfessorOrDocent": <ProfessorOrDocent/>,
+            "ProfOrDocentMedicalInstitution": <ProfOrDocentMedicalInstitution/>,
+            "Staff": <Staff/>,
+            "StaffMedicalInstitution": <StaffMedicalInstitution/>,
         };
     return (
         <div>

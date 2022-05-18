@@ -14,7 +14,6 @@ public class Cabinets implements Serializable {
 
     @Id
     @Column(name = "id", nullable = false)
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "polyclinic_id", nullable = false)

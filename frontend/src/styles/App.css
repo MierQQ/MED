@@ -15,4 +15,5 @@
     width: 80%;
     height: 100%;
     background: rgba(0, 229, 131, 0.29);
+    overflow: auto;
 }

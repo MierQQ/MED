@@ -14,7 +14,6 @@ public class LabMedicalInstitution implements Serializable {
 
     @Id
     @Column(name = "id", nullable = false)
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "medical_institution_id")

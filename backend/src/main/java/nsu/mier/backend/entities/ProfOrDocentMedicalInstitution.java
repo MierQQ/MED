@@ -14,7 +14,6 @@ public class ProfOrDocentMedicalInstitution implements Serializable {
 
     @Id
     @Column(name = "id", nullable = false)
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "prof_or_docent_id", nullable = false)
