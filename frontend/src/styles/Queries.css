@@ -1,0 +1,29 @@
+.inputs-container {
+    margin: 1%;
+}
+
+.input-container {
+    margin: 1%;
+}
+
+.input-label {
+    display: inline-block;
+    width: 10%;
+}
+
+.search-button {
+    background-color: #2BAC75;
+    border: none;
+    color: white;
+    width: auto;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    border-radius: 4px;
+}
+
+.total {
+    margin: 1% 2%;
+}
