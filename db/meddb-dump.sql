@@ -151,26 +151,6 @@ $$;
 ALTER FUNCTION public.find_med_staff_with_standing(institutionids integer[], specializations character varying[], standing interval) OWNER TO postgres;
 
 --
--- Name: find_patient_between_date(character varying[], integer[]); Type: FUNCTION; Schema: public; Owner: postgres
---
-
-CREATE FUNCTION public.find_patient_between_date(specializations character varying[], institutionids integer[]) RETURNS TABLE(name character varying, id integer)
-    LANGUAGE plpgsql
-    AS $$
-BEGIN
-    RETURN QUERY
-        SELECT DISTINCT p.name, p.id
-        FROM patient p inner join patient_records pr on p.id = pr.patient_id inner join staff s on s.id = pr.doctor_id
-        where   ((cardinality(specializations) != 0 AND s.specialization = ANY(specialization)) OR (cardinality(specialization) = 0)) and
-                ((cardinality(institutionIds) != 0 AND pr.medical_institution_id = ANY(institutionIds)) OR (cardinality(institutionIds) = 0))
-        ORDER BY p.id;
-END
-$$;
-
-
-ALTER FUNCTION public.find_patient_between_date(specializations character varying[], institutionids integer[]) OWNER TO postgres;
-
---
 -- Name: find_patient_between_date(integer[], integer[], date, date); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
@@ -180,8 +160,8 @@ CREATE FUNCTION public.find_patient_between_date(institutionids integer[], medst
 BEGIN
     RETURN QUERY
         SELECT DISTINCT p.name, p.id
-        FROM patient p inner join public.patient_records pr on p.id = pr.patient_id
-        where   (pr.data between startDate and endDate) and
+        FROM patient p inner join public.patient_records pr on p.id = pr.patient_id join hospital_room_expiring hre on hre.record = pr.grouping join hospital h on pr.medical_institution_id = h.id
+        where   ((pr.date between startDate and endDate) or (hre.date between startDate and endDate) or (pr.date < startDate and hre.date > endDate)) and
                 ((cardinality(institutionIds) != 0 AND pr.medical_institution_id = ANY(institutionIds)) OR (cardinality(institutionIds) = 0)) AND
                 ((cardinality(medStaffIds) != 0 AND pr.doctor_id = ANY(medStaffIds)) OR (cardinality(medStaffIds) = 0))
         ORDER BY p.id;
@@ -192,15 +172,35 @@ $$;
 ALTER FUNCTION public.find_patient_between_date(institutionids integer[], medstaffids integer[], startdate date, enddate date) OWNER TO postgres;
 
 --
--- Name: find_patients_hospital(integer[], integer[], integer[]); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: find_patient_by_specialization(character varying[], integer[]); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
-CREATE FUNCTION public.find_patients_hospital(hospitalids integer[], departmentids integer[], hospitalroomids integer[]) RETURNS TABLE(id integer, name character varying, data character varying, date date)
+CREATE FUNCTION public.find_patient_by_specialization(specializations character varying[], institutionids integer[]) RETURNS TABLE(name character varying, id integer)
     LANGUAGE plpgsql
     AS $$
 BEGIN
     RETURN QUERY
-        SELECT patient.id, patient.name, pr.data, pr.date
+        SELECT DISTINCT p.name, p.id
+        FROM patient p join med_staff_patient msp on p.id = msp.patient_id join staff s on s.id = msp.med_staff_id join staff_medical_institution smi on s.id = smi.staff_id
+        where   ((cardinality(specializations) != 0 AND s.specialization = ANY(specializations)) OR (cardinality(specializations) = 0)) and
+                ((cardinality(institutionIds) != 0 AND smi.medical_institution_id = ANY(institutionIds)) OR (cardinality(institutionIds) = 0))
+        ORDER BY p.id;
+END
+$$;
+
+
+ALTER FUNCTION public.find_patient_by_specialization(specializations character varying[], institutionids integer[]) OWNER TO postgres;
+
+--
+-- Name: find_patients_hospital(integer[], integer[], integer[]); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.find_patients_hospital(hospitalids integer[], departmentids integer[], hospitalroomids integer[]) RETURNS TABLE(id integer, name character varying, data character varying, date date, visit integer)
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    RETURN QUERY
+        SELECT patient.id, patient.name, pr.data, pr.date::date, pr.grouping
         FROM patient_records pr join hospital_room on pr.hospital_room_id = hospital_room.id
         join department on hospital_room.department_id = department.id join building_body on department.building_body_id = building_body.id
         join hospital on building_body.hospital_id = hospital.id join patient on pr.patient_id = patient.id
@@ -241,40 +241,41 @@ ALTER FUNCTION public.find_service_staff(institutionids integer[], specializatio
 -- Name: get_count_of_cabinets(integer[]); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
-CREATE FUNCTION public.get_count_of_cabinets(institution_ids integer[]) RETURNS TABLE(count integer)
+CREATE FUNCTION public.get_count_of_cabinets(institutionids integer[]) RETURNS TABLE(count integer)
     LANGUAGE plpgsql
     AS $$
 BEGIN
     RETURN QUERY
-        SELECT count(*) as count
+        SELECT count(*)::INTEGER as count
         FROM cabinets as c
-        where  ((cardinality(institution_ids) != 0 AND c.polyclinic_id = ANY(institution_ids)) OR (cardinality(institution_ids) = 0));
+        where  ((cardinality(institutionIds) != 0 AND c.polyclinic_id = ANY(institutionIds)) OR (cardinality(institutionIds) = 0));
 END
 $$;
 
 
-ALTER FUNCTION public.get_count_of_cabinets(institution_ids integer[]) OWNER TO postgres;
+ALTER FUNCTION public.get_count_of_cabinets(institutionids integer[]) OWNER TO postgres;
 
 --
--- Name: get_count_of_cabinets_usage(date, date); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: get_count_of_cabinets_usage(integer[], date, date); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
-CREATE FUNCTION public.get_count_of_cabinets_usage(startdate date, enddate date) RETURNS TABLE(id integer, number integer, count integer)
+CREATE FUNCTION public.get_count_of_cabinets_usage(institutionids integer[], startdate date, enddate date) RETURNS TABLE(id integer, number integer, count integer)
     LANGUAGE plpgsql
     AS $$
 BEGIN
     RETURN QUERY
-        SELECT c.id, c.number, count(pr.grouping)
-        FROM cabinets c left join patient_records pr on c.id = pr.cabinet
-        where (pr.type = 'visit' and pr.date between startDate and endDate) or (pr.type is NULL)
-        group by c.id
-        ORDER BY c.id;
-
+        select c.id, c.number, sum(flag)::integer
+        from cabinets c join
+        (SELECT c.id id, ((pr.id is not null) and pr.type = 'visit' and pr.date between startDate and endDate)::integer flag
+        FROM cabinets c left join patient_records pr on (c.id = pr.cabinet)) cc on c.id = cc.id
+        where ((cardinality(institutionIds) != 0 AND c.polyclinic_id = ANY(institutionIds)) OR (cardinality(institutionIds) = 0))
+        group by c.id, c.number
+        order by c.id;
 END
 $$;
 
 
-ALTER FUNCTION public.get_count_of_cabinets_usage(startdate date, enddate date) OWNER TO postgres;
+ALTER FUNCTION public.get_count_of_cabinets_usage(institutionids integer[], startdate date, enddate date) OWNER TO postgres;
 
 --
 -- Name: get_lab_productivity(date, date, integer[]); Type: FUNCTION; Schema: public; Owner: postgres
@@ -288,7 +289,7 @@ BEGIN
         SELECT l.id, (count(pr.id)::DOUBLE PRECISION / (endDate - startDate)::DOUBLE PRECISION)
         FROM laboratory l join lab_medical_institution lmi on l.id = lmi.laboratory_id left join analyzes a on l.id = a.lab_id left join patient_records pr on a.record = pr.id
         WHERE pr.date between startDate and endDate and
-              ((cardinality(medIds)!=0 AND lmi.medical_institution_id = ANY(medIds)) OR cardinality(medIds)=0)
+              ((cardinality(medIds)!=0 AND lmi.medical_institution_id = ANY(medIds)) OR cardinality(medIds)= 0)
         group by l.id;
 END
 $$;
@@ -297,147 +298,159 @@ $$;
 ALTER FUNCTION public.get_lab_productivity(startdate date, enddate date, medids integer[]) OWNER TO postgres;
 
 --
--- Name: get_number_of_free_hospital_room_beds_by_departments(); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: get_number_of_free_hospital_room_beds_by_departments(integer[]); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
-CREATE FUNCTION public.get_number_of_free_hospital_room_beds_by_departments() RETURNS TABLE(departmentid integer, count integer)
+CREATE FUNCTION public.get_number_of_free_hospital_room_beds_by_departments(hospitalids integer[]) RETURNS TABLE(departmentid integer, count integer)
     LANGUAGE plpgsql
     AS $$
 BEGIN
     RETURN QUERY
-        SELECT d.id, sum(hospital_room.bed_number) - count(pr.id)
-        FROM hospital_room join department d on hospital_room.department_id = d.id left join
-        patient_records pr on hospital_room.id = pr.hospital_room_id left join hospital_room_expiring hre on pr.grouping = hre.record
-        where hre.date is null or hre.date > current_date
-        group by d.id;
+        SELECT d.id, (sum(hospital_room.bed_number) - count(hre.record))::INTEGER
+        FROM hospital_room join department d on hospital_room.department_id = d.id join building_body bb on d.building_body_id = bb.id join hospital h on (bb.hospital_id = h.id and ((cardinality(hospitalIds) != 0 AND h.id = ANY(hospitalIds)) OR (cardinality(hospitalIds) = 0)))
+        left join
+        patient_records pr on hospital_room.id = pr.hospital_room_id left join hospital_room_expiring hre on (pr.grouping = hre.record and hre.date > current_date)
+        where pr.type = 'visit' or pr.type is null
+        group by d.id
+        ORDER BY d.id;
 END
 $$;
 
 
-ALTER FUNCTION public.get_number_of_free_hospital_room_beds_by_departments() OWNER TO postgres;
+ALTER FUNCTION public.get_number_of_free_hospital_room_beds_by_departments(hospitalids integer[]) OWNER TO postgres;
 
 --
--- Name: get_number_of_free_hospital_room_by_departments(); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: get_number_of_free_hospital_room_by_departments(integer[]); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
-CREATE FUNCTION public.get_number_of_free_hospital_room_by_departments() RETURNS TABLE(departmentid integer, count integer)
+CREATE FUNCTION public.get_number_of_free_hospital_room_by_departments(hospitalids integer[]) RETURNS TABLE(departmentid integer, count integer)
     LANGUAGE plpgsql
     AS $$
 BEGIN
     RETURN QUERY
-        SELECT d.id, count(hospital_room.id)
-        FROM hospital_room join department d on hospital_room.department_id = d.id left join
+        SELECT jjj.id, sum(jjj.flagIsNull)::INTEGER
+        from (SELECT d.id id, (prid.hospital_room_id is null)::integer flagIsNull
+        FROM hospital_room join department d on hospital_room.department_id = d.id join building_body bb on d.building_body_id = bb.id join hospital h on (bb.hospital_id = h.id and ((cardinality(hospitalIds) != 0 AND h.id = ANY(hospitalIds)) OR (cardinality(hospitalIds) = 0)))
+            left join
             (
                 select distinct pr.hospital_room_id
-                from patient_records pr join hospital_room_expiring hre on pr.date = hre.date
+                from patient_records pr join hospital_room_expiring hre on pr.grouping = hre.record
                 where current_date < hre.date
-            ) prid on hospital_room.id = prid.hospital_room_id
-        where prid.hospital_room_id is null
-        group by d.id;
+            ) prid on hospital_room.id = prid.hospital_room_id) jjj
+        group by jjj.id
+        ORDER BY jjj.id;
 END
 $$;
 
 
-ALTER FUNCTION public.get_number_of_free_hospital_room_by_departments() OWNER TO postgres;
+ALTER FUNCTION public.get_number_of_free_hospital_room_by_departments(hospitalids integer[]) OWNER TO postgres;
 
 --
--- Name: get_number_of_hospital_room(); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: get_number_of_hospital_room(integer[]); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
-CREATE FUNCTION public.get_number_of_hospital_room() RETURNS TABLE(count integer)
+CREATE FUNCTION public.get_number_of_hospital_room(hospitalids integer[]) RETURNS TABLE(count integer)
     LANGUAGE plpgsql
     AS $$
 BEGIN
     RETURN QUERY
-        SELECT count(hospital_room.id)
-        FROM hospital_room;
+        SELECT count(hr.id)::INTEGER
+        FROM hospital_room hr join department d on hr.department_id = d.id join building_body bb on d.building_body_id = bb.id
+        join hospital h on (bb.hospital_id = h.id and ((cardinality(hospitalIds) != 0 AND h.id = ANY(hospitalIds)) OR (cardinality(hospitalIds) = 0)));
 END
 $$;
 
 
-ALTER FUNCTION public.get_number_of_hospital_room() OWNER TO postgres;
+ALTER FUNCTION public.get_number_of_hospital_room(hospitalids integer[]) OWNER TO postgres;
 
 --
--- Name: get_number_of_hospital_room_beds(); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: get_number_of_hospital_room_beds(integer[]); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
-CREATE FUNCTION public.get_number_of_hospital_room_beds() RETURNS TABLE(count integer)
+CREATE FUNCTION public.get_number_of_hospital_room_beds(hospitalids integer[]) RETURNS TABLE(count integer)
     LANGUAGE plpgsql
     AS $$
 BEGIN
     RETURN QUERY
-        SELECT sum(hospital_room.bed_number)
-        FROM hospital_room;
+        SELECT sum(hr.bed_number)::INTEGER
+        FROM hospital_room hr join department d on hr.department_id = d.id join building_body bb on d.building_body_id = bb.id
+        join hospital h on (bb.hospital_id = h.id and ((cardinality(hospitalIds) != 0 AND h.id = ANY(hospitalIds)) OR (cardinality(hospitalIds) = 0)));
 END
 $$;
 
 
-ALTER FUNCTION public.get_number_of_hospital_room_beds() OWNER TO postgres;
+ALTER FUNCTION public.get_number_of_hospital_room_beds(hospitalids integer[]) OWNER TO postgres;
 
 --
--- Name: get_number_of_hospital_room_beds_by_departments(); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: get_number_of_hospital_room_beds_by_departments(integer[]); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
-CREATE FUNCTION public.get_number_of_hospital_room_beds_by_departments() RETURNS TABLE(departmentid integer, count integer)
+CREATE FUNCTION public.get_number_of_hospital_room_beds_by_departments(hospitalids integer[]) RETURNS TABLE(departmentid integer, count integer)
     LANGUAGE plpgsql
     AS $$
 BEGIN
     RETURN QUERY
-        SELECT d.id, sum(hospital_room.bed_number)
-        FROM hospital_room join department d on hospital_room.department_id = d.id
-        group by d.id;
+        SELECT d.id, sum(hr.bed_number)::INTEGER
+        FROM hospital_room hr join department d on hr.department_id = d.id join building_body bb on d.building_body_id = bb.id
+        join hospital h on (bb.hospital_id = h.id and ((cardinality(hospitalIds) != 0 AND h.id = ANY(hospitalIds)) OR (cardinality(hospitalIds) = 0)))
+        group by d.id
+        ORDER BY d.id;
 END
 $$;
 
 
-ALTER FUNCTION public.get_number_of_hospital_room_beds_by_departments() OWNER TO postgres;
+ALTER FUNCTION public.get_number_of_hospital_room_beds_by_departments(hospitalids integer[]) OWNER TO postgres;
 
 --
--- Name: get_number_of_hospital_room_by_departments(); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: get_number_of_hospital_room_by_departments(integer[]); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
-CREATE FUNCTION public.get_number_of_hospital_room_by_departments() RETURNS TABLE(departmentid integer, count integer)
+CREATE FUNCTION public.get_number_of_hospital_room_by_departments(hospitalids integer[]) RETURNS TABLE(departmentid integer, count integer)
     LANGUAGE plpgsql
     AS $$
 BEGIN
     RETURN QUERY
-        SELECT d.id, count(hospital_room.id)
-        FROM hospital_room join department d on hospital_room.department_id = d.id
-        group by d.id;
+        SELECT d.id, count(hr.id)::INTEGER
+        FROM hospital_room hr join department d on hr.department_id = d.id join building_body bb on d.building_body_id = bb.id
+        join hospital h on (bb.hospital_id = h.id and ((cardinality(hospitalIds) != 0 AND h.id = ANY(hospitalIds)) OR (cardinality(hospitalIds) = 0)))
+        group by d.id
+        ORDER BY d.id;
 END
 $$;
 
 
-ALTER FUNCTION public.get_number_of_hospital_room_by_departments() OWNER TO postgres;
+ALTER FUNCTION public.get_number_of_hospital_room_by_departments(hospitalids integer[]) OWNER TO postgres;
 
 --
--- Name: get_productivity_hospital(date, date, integer[], character varying[], integer[]); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: get_productivity_hospital(integer[], character varying[], integer[]); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
-CREATE FUNCTION public.get_productivity_hospital(startdate date, enddate date, doctorids integer[], specializationids character varying[], hospitalids integer[]) RETURNS TABLE(id integer, name character varying, productivity double precision)
+CREATE FUNCTION public.get_productivity_hospital(doctorids integer[], specializations character varying[], hospitalids integer[]) RETURNS TABLE(id integer, name character varying, productivity double precision)
     LANGUAGE plpgsql
     AS $$
 BEGIN
     RETURN QUERY
-        SELECT s.id, s.name, (count(pr.grouping)::DOUBLE PRECISION / (endDate - startDate)::DOUBLE PRECISION) productivity
-        FROM patient_records pr join staff s on pr.doctor_id = s.id join med_staff ms on s.id = ms.id join hospital h on pr.medical_institution_id = h.id
-        WHERE (pr.date between startDate and endDate) and
-              ((cardinality(doctorIds)!=0 AND pr.doctor_id = ANY(doctorIds)) OR cardinality(doctorIds)=0) and
-              ((cardinality(specializationIds)!=0 AND s.specialization = ANY(specializationIds)) OR cardinality(specializationIds)=0) and
-              ((cardinality(hospitalIds)!=0 AND pr.medical_institution_id = ANY(hospitalIds)) OR cardinality(hospitalIds)=0)
+        SELECT s.id, s.name, count(hre.id)::DOUBLE PRECISION
+        FROM staff s join med_staff ms on s.id = ms.id join staff_medical_institution smi
+            on (s.id = smi.staff_id and
+                ((cardinality(specializations)!=0 AND s.specialization = ANY(specializations)) OR cardinality(specializations)=0) and
+                ((cardinality(hospitalIds)!=0 AND smi.medical_institution_id = ANY(hospitalIds)) OR cardinality(hospitalIds)=0)) left join
+                (patient_records pr join hospital_room_expiring hre on
+                (pr.grouping = hre.record and hre.date > current_date and pr.type = 'visit') and ((cardinality(doctorIds)!=0 AND pr.doctor_id = ANY(doctorIds)) OR cardinality(doctorIds)=0)) on s.id = pr.doctor_id and pr.medical_institution_id = smi.medical_institution_id
+
         GROUP BY s.id, s.name
         ORDER BY s.id;
 END
 $$;
 
 
-ALTER FUNCTION public.get_productivity_hospital(startdate date, enddate date, doctorids integer[], specializationids character varying[], hospitalids integer[]) OWNER TO postgres;
+ALTER FUNCTION public.get_productivity_hospital(doctorids integer[], specializations character varying[], hospitalids integer[]) OWNER TO postgres;
 
 --
 -- Name: get_productivity_polyclinic(date, date, integer[], character varying[], integer[]); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
-CREATE FUNCTION public.get_productivity_polyclinic(startdate date, enddate date, doctorids integer[], specializationids character varying[], polyclinicids integer[]) RETURNS TABLE(id integer, name character varying, productivity double precision)
+CREATE FUNCTION public.get_productivity_polyclinic(startdate date, enddate date, doctorids integer[], specializations character varying[], polyclinicids integer[]) RETURNS TABLE(id integer, name character varying, productivity double precision)
     LANGUAGE plpgsql
     AS $$
 BEGIN
@@ -446,7 +459,7 @@ BEGIN
         FROM patient_records pr join staff s on pr.doctor_id = s.id join med_staff ms on s.id = ms.id join polyclinic p on pr.medical_institution_id = p.id
         WHERE (pr.date between startDate and endDate) and
               ((cardinality(doctorIds)!=0 AND pr.doctor_id = ANY(doctorIds)) OR cardinality(doctorIds)=0) and
-              ((cardinality(specializationIds)!=0 AND s.specialization = ANY(specializationIds)) OR cardinality(specializationIds)=0) and
+              ((cardinality(specializations)!=0 AND s.specialization = ANY(specializations)) OR cardinality(specializations)=0) and
               ((cardinality(polyclinicIds)!=0 AND pr.medical_institution_id = ANY(polyclinicIds)) OR cardinality(polyclinicIds)=0)
         GROUP BY s.id, s.name
         ORDER BY s.id;
@@ -454,27 +467,27 @@ END
 $$;
 
 
-ALTER FUNCTION public.get_productivity_polyclinic(startdate date, enddate date, doctorids integer[], specializationids character varying[], polyclinicids integer[]) OWNER TO postgres;
+ALTER FUNCTION public.get_productivity_polyclinic(startdate date, enddate date, doctorids integer[], specializations character varying[], polyclinicids integer[]) OWNER TO postgres;
 
 --
--- Name: get_surgeon_patients(integer[], integer[]); Type: FUNCTION; Schema: public; Owner: postgres
+-- Name: get_surgeon_patients(date, date, integer[], integer[]); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
-CREATE FUNCTION public.get_surgeon_patients(doctorids integer[], medids integer[]) RETURNS TABLE(id integer, name character varying)
+CREATE FUNCTION public.get_surgeon_patients(startdate date, enddate date, doctorids integer[], medids integer[]) RETURNS TABLE(id integer, name character varying)
     LANGUAGE plpgsql
     AS $$
 BEGIN
     RETURN QUERY
         SELECT p.id, p.name
         FROM patient_records pr join patient p on pr.patient_id = p.id
-        WHERE pr.type = 'operaton' and
+        WHERE pr.type = 'operaton' and pr.date between startDate and endDate and
               ((cardinality(doctorIds)!=0 AND pr.doctor_id = ANY(doctorIds)) OR cardinality(doctorIds)=0) and
               ((cardinality(medIds)!=0 AND pr.medical_institution_id = ANY(medIds)) OR cardinality(medIds)=0);
 END
 $$;
 
 
-ALTER FUNCTION public.get_surgeon_patients(doctorids integer[], medids integer[]) OWNER TO postgres;
+ALTER FUNCTION public.get_surgeon_patients(startdate date, enddate date, doctorids integer[], medids integer[]) OWNER TO postgres;
 
 SET default_tablespace = '';
 
@@ -1373,7 +1386,7 @@ INSERT INTO public.hospital_room VALUES (37, 10, 6);
 --
 
 INSERT INTO public.hospital_room_expiring VALUES (3, '2021-05-31', 1);
-INSERT INTO public.hospital_room_expiring VALUES (4, '2021-04-08', 2);
+INSERT INTO public.hospital_room_expiring VALUES (4, '2023-04-08', 2);
 
 
 --
@@ -1513,6 +1526,7 @@ INSERT INTO public.patient VALUES (5, 'Щукин Виктор сергееви�
 INSERT INTO public.patient VALUES (6, 'Гомелев Константин Васильевич', '2001-12-01 00:00:00');
 INSERT INTO public.patient VALUES (7, 'Ульянов Андрей Максимович', '2001-12-01 00:00:00');
 INSERT INTO public.patient VALUES (8, 'Артемов Артем Артемович', '2001-12-01 00:00:00');
+INSERT INTO public.patient VALUES (9, 'Кок', '2001-02-02 06:00:00');
 
 
 --
@@ -1774,7 +1788,7 @@ SELECT pg_catalog.setval('public.medical_institution_id_seq', 1, false);
 -- Name: patient_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.patient_id_seq', 1, false);
+SELECT pg_catalog.setval('public.patient_id_seq', 3, true);
 
 
 --
@@ -1882,6 +1896,14 @@ ALTER TABLE ONLY public.hospital
 
 ALTER TABLE ONLY public.hospital_room_expiring
     ADD CONSTRAINT hospital_room_expiring_pk PRIMARY KEY (id);
+
+
+--
+-- Name: hospital_room_expiring hospital_room_expiring_pk_2; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.hospital_room_expiring
+    ADD CONSTRAINT hospital_room_expiring_pk_2 UNIQUE (record);
 
 
 --
