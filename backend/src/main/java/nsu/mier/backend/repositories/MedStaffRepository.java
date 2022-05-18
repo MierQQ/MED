@@ -27,10 +27,10 @@ public interface MedStaffRepository extends JpaRepository<MedStaff, Long>, JpaSp
     @Query(nativeQuery = true, value = "SELECT * FROM find_med_staff_with_standing(" +
             "CAST(:institutionIds AS INTEGER[])," +
             "CAST(:specializations AS VARCHAR [])," +
-            ":standing)")
+            "CAST(:standing AS INTERVAL))")
     List<StaffQueryDTO> findQuery4(@Param("institutionIds") String institutionIds,
                                    @Param("specializations") String specializations,
-                                   @Param("standing") Integer standing);
+                                   @Param("standing") String standing);
 
     @Query(nativeQuery = true, value = "SELECT * FROM find_med_staff_with_regalia(" +
             "CAST(:institutionIds AS INTEGER[])," +

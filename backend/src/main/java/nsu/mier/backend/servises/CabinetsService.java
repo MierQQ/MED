@@ -73,7 +73,7 @@ public class CabinetsService {
         return cabinetsRepository.findQuery101(institutionIds);
     }
 
-    public List<CabinetCountDTO> findQuery102(String startDate, String endDate) {
-        return cabinetsRepository.findQuery102(startDate, endDate);
+    public List<CabinetCountDTO> findQuery102(String institutionIds, String startDate, String endDate) {
+        return cabinetsRepository.findQuery102(institutionIds, startDate, endDate);
     }
 }

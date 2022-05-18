@@ -1,6 +1,7 @@
 import "../../styles/Panel.css"
 import App from "../../App";
 import {useState} from "react";
+import Query1 from "../containers/Queries/Query1";
 
 function Panel(props) {
     const tableButtons =

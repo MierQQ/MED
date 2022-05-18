@@ -55,7 +55,7 @@ public class QueryController {
     @GetMapping("/4")
     public List<StaffQueryDTO> find4(@RequestParam(required = false, defaultValue = "{}") String institutionIds,
                                      @RequestParam(required = false, defaultValue = "{}") String specializations,
-                                     @RequestParam(required = false, defaultValue = "0") Integer standing) {
+                                     @RequestParam(required = false, defaultValue = "0 days") String standing) {
         return medStaffService.findQuery4(institutionIds, specializations, standing);
     }
 
@@ -87,33 +87,33 @@ public class QueryController {
     }
 
     @GetMapping("/9/1")
-    public List<CountDTO> find91() {
-        return hospitalRoomService.findQuery91();
+    public List<CountDTO> find91(@RequestParam(required = false, defaultValue = "{}") String hospitalIds) {
+        return hospitalRoomService.findQuery91(hospitalIds);
     }
 
     @GetMapping("/9/2")
-    public List<CountDTO> find92() {
-        return hospitalRoomService.findQuery92();
+    public List<CountDTO> find92(@RequestParam(required = false, defaultValue = "{}") String hospitalIds) {
+        return hospitalRoomService.findQuery92(hospitalIds);
     }
 
     @GetMapping("/9/3")
-    public List<DepartmentCountDTO> find93() {
-        return hospitalRoomService.findQuery93();
+    public List<DepartmentCountDTO> find93(@RequestParam(required = false, defaultValue = "{}") String hospitalIds) {
+        return hospitalRoomService.findQuery93(hospitalIds);
     }
 
     @GetMapping("/9/4")
-    public List<DepartmentCountDTO> find94() {
-        return hospitalRoomService.findQuery94();
+    public List<DepartmentCountDTO> find94(@RequestParam(required = false, defaultValue = "{}") String hospitalIds) {
+        return hospitalRoomService.findQuery94(hospitalIds);
     }
 
     @GetMapping("/9/5")
-    public List<DepartmentCountDTO> find95() {
-        return hospitalRoomService.findQuery95();
+    public List<DepartmentCountDTO> find95(@RequestParam(required = false, defaultValue = "{}") String hospitalIds) {
+        return hospitalRoomService.findQuery95(hospitalIds);
     }
 
     @GetMapping("/9/6")
-    public List<DepartmentCountDTO> find96() {
-        return hospitalRoomService.findQuery96();
+    public List<DepartmentCountDTO> find96(@RequestParam(required = false, defaultValue = "{}") String hospitalIds) {
+        return hospitalRoomService.findQuery96(hospitalIds);
     }
 
     @GetMapping("/10/1")
@@ -122,9 +122,10 @@ public class QueryController {
     }
 
     @GetMapping("/10/2")
-    public List<CabinetCountDTO> find102(@RequestParam(required = false) String startDate,
-                                        @RequestParam(required = false) String endDate) {
-        return cabinetsService.findQuery102(startDate, endDate);
+    public List<CabinetCountDTO> find102(@RequestParam(required = false, defaultValue = "{}") String institutionIds,
+                                         @RequestParam(required = false) String startDate,
+                                         @RequestParam(required = false) String endDate) {
+        return cabinetsService.findQuery102(institutionIds, startDate, endDate);
     }
 
     @GetMapping("/11")

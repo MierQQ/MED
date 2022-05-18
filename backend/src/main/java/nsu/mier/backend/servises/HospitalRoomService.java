@@ -68,27 +68,27 @@ public class HospitalRoomService {
         return hospitalRoomRepository.findAll();
     }
 
-    public List<CountDTO> findQuery91() {
-        return hospitalRoomRepository.findQuery91();
+    public List<CountDTO> findQuery91(String hospitalIds) {
+        return hospitalRoomRepository.findQuery91(hospitalIds);
     }
 
-    public List<CountDTO> findQuery92() {
-        return hospitalRoomRepository.findQuery92();
+    public List<CountDTO> findQuery92(String hospitalIds) {
+        return hospitalRoomRepository.findQuery92(hospitalIds);
     }
 
-    public List<DepartmentCountDTO> findQuery93() {
-        return hospitalRoomRepository.findQuery93();
+    public List<DepartmentCountDTO> findQuery93(String hospitalIds) {
+        return hospitalRoomRepository.findQuery93(hospitalIds);
     }
 
-    public List<DepartmentCountDTO> findQuery94() {
-        return hospitalRoomRepository.findQuery94();
+    public List<DepartmentCountDTO> findQuery94(String hospitalIds) {
+        return hospitalRoomRepository.findQuery94(hospitalIds);
     }
 
-    public List<DepartmentCountDTO> findQuery95() {
-        return hospitalRoomRepository.findQuery95();
+    public List<DepartmentCountDTO> findQuery95(String hospitalIds) {
+        return hospitalRoomRepository.findQuery95(hospitalIds);
     }
 
-    public List<DepartmentCountDTO> findQuery96() {
-        return hospitalRoomRepository.findQuery96();
+    public List<DepartmentCountDTO> findQuery96(String hospitalIds) {
+        return hospitalRoomRepository.findQuery96(hospitalIds);
     }
 }

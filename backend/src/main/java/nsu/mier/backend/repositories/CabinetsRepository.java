@@ -18,7 +18,8 @@ public interface CabinetsRepository extends JpaRepository<Cabinets, Long>, JpaSp
     List<CountDTO> findQuery101(@Param("institutionIds") String institutionIds);
 
     @Query(nativeQuery = true, value = "SELECT * FROM get_count_of_cabinets_usage(" +
+            "CAST(:institutionIds AS INTEGER[])," +
             "CAST(:startDate AS DATE)," +
             "CAST(:endDate AS DATE))")
-    List<CabinetCountDTO> findQuery102(@Param("startDate") String startDate, @Param("endDate") String endDate);
+    List<CabinetCountDTO> findQuery102(@Param("institutionIds")String institutionIds, @Param("startDate") String startDate, @Param("endDate") String endDate);
 }

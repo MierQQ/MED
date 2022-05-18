@@ -74,7 +74,7 @@ public class MedStaffService {
         return medStaffRepository.findQuery3(institutionIds, specializations, surgeriesNumber);
     }
 
-    public List<StaffQueryDTO> findQuery4(String institutionIds, String specializations, Integer standing) {
+    public List<StaffQueryDTO> findQuery4(String institutionIds, String specializations, String standing) {
         return medStaffRepository.findQuery4(institutionIds, specializations, standing);
     }
 

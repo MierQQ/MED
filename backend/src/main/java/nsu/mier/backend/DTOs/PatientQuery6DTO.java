@@ -7,4 +7,5 @@ public interface PatientQuery6DTO {
     String getName();
     String getData();
     LocalDate getDate();
+    Integer getVisit();
 }
