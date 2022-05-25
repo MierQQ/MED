@@ -13,6 +13,7 @@
 
 .search-button {
     background-color: #2BAC75;
+    margin: 1px;
     border: none;
     color: white;
     width: auto;

@@ -8,7 +8,14 @@ function StaffMedicalInstitution() {
             "staffId",
             "medicalInstitutionId",
         ];
-    return <TableTemplate url = "staffMedicalInstitution" fields = {fields}/>;
+    const type =
+        {
+            "id": "number",
+            "staffId": "number",
+            "medicalInstitutionId": "number"
+        };
+    const relatedTables = ["StaffId", "MedicalInstitution"];
+    return <TableTemplate url = "staffMedicalInstitution" fields = {fields} type = {type} relatedTables={relatedTables}/>;
 }
 
 export default StaffMedicalInstitution;

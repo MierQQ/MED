@@ -11,7 +11,16 @@ function Staff() {
             "type",
             "employmentDate",
         ];
-    return <TableTemplate url = "staff" fields = {fields}/>;
+    const type =
+        {
+            "id": "number",
+            "name": "text",
+            "specialization": "text",
+            "salary": "number",
+            "type": "text",
+            "employmentDate": "date"
+        };
+    return <TableTemplate url = "staff" fields = {fields} type = {type}/>;
 }
 
 export default Staff;

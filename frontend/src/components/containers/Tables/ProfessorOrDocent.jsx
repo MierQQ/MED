@@ -6,7 +6,12 @@ function ProfessorOrDocent() {
         [
             "id"
         ];
-    return <TableTemplate url = "professorOrDocent" fields = {fields}/>;
+    const type =
+        {
+            "id": "number"
+        };
+    const relatedTables = ["MedStaff"];
+    return <TableTemplate url = "professorOrDocent" fields = {fields} type = {type} relatedTables={relatedTables}/>;
 }
 
 export default ProfessorOrDocent;

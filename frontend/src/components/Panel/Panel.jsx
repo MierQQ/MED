@@ -76,46 +76,46 @@ function Panel(props) {
         (
             <div>
                 <div className="panel-button-container">
-                    <button className="panel-button" onClick={()=>{props.setContainer("1")}}>1</button>
+                    <button className="panel-button" onClick={()=>{props.setContainer("1")}}>Query 1</button>
                 </div>
                 <div className="panel-button-container">
-                    <button className="panel-button" onClick={()=>{props.setContainer("2")}}>2</button>
+                    <button className="panel-button" onClick={()=>{props.setContainer("2")}}>Query 2</button>
                 </div>
                 <div className="panel-button-container">
-                    <button className="panel-button" onClick={()=>{props.setContainer("3")}}>3</button>
+                    <button className="panel-button" onClick={()=>{props.setContainer("3")}}>Query 3</button>
                 </div>
                 <div className="panel-button-container">
-                    <button className="panel-button" onClick={()=>{props.setContainer("4")}}>4</button>
+                    <button className="panel-button" onClick={()=>{props.setContainer("4")}}>Query 4</button>
                 </div>
                 <div className="panel-button-container">
-                    <button className="panel-button" onClick={()=>{props.setContainer("5")}}>5</button>
+                    <button className="panel-button" onClick={()=>{props.setContainer("5")}}>Query 5</button>
                 </div>
                 <div className="panel-button-container">
-                    <button className="panel-button" onClick={()=>{props.setContainer("6")}}>6</button>
+                    <button className="panel-button" onClick={()=>{props.setContainer("6")}}>Query 6</button>
                 </div>
                 <div className="panel-button-container">
-                    <button className="panel-button" onClick={()=>{props.setContainer("7")}}>7</button>
+                    <button className="panel-button" onClick={()=>{props.setContainer("7")}}>Query 7</button>
                 </div>
                 <div className="panel-button-container">
-                    <button className="panel-button" onClick={()=>{props.setContainer("8")}}>8</button>
+                    <button className="panel-button" onClick={()=>{props.setContainer("8")}}>Query 8</button>
                 </div>
                 <div className="panel-button-container">
-                    <button className="panel-button" onClick={()=>{props.setContainer("9")}}>9</button>
+                    <button className="panel-button" onClick={()=>{props.setContainer("9")}}>Query 9</button>
                 </div>
                 <div className="panel-button-container">
-                    <button className="panel-button" onClick={()=>{props.setContainer("10")}}>10</button>
+                    <button className="panel-button" onClick={()=>{props.setContainer("10")}}>Query 10</button>
                 </div>
                 <div className="panel-button-container">
-                    <button className="panel-button" onClick={()=>{props.setContainer("11")}}>11</button>
+                    <button className="panel-button" onClick={()=>{props.setContainer("11")}}>Query 11</button>
                 </div>
                 <div className="panel-button-container">
-                    <button className="panel-button" onClick={()=>{props.setContainer("12")}}>12</button>
+                    <button className="panel-button" onClick={()=>{props.setContainer("12")}}>Query 12</button>
                 </div>
                 <div className="panel-button-container">
-                    <button className="panel-button" onClick={()=>{props.setContainer("13")}}>13</button>
+                    <button className="panel-button" onClick={()=>{props.setContainer("13")}}>Query 13</button>
                 </div>
                 <div className="panel-button-container">
-                    <button className="panel-button" onClick={()=>{props.setContainer("14")}}>14</button>
+                    <button className="panel-button" onClick={()=>{props.setContainer("14")}}>Query 14</button>
                 </div>
 
             </div>
