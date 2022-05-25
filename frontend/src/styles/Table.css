@@ -11,6 +11,8 @@
     overflow: auto;
 }
 
+.tableCellWithObject {text-align: left;}
+
 .tr:hover {
     background: #f3bd48; /* Цвет фона при наведении */
     color: #fff; /* Цвет текста при наведении */

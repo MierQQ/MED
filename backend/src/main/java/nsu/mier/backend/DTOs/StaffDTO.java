@@ -4,7 +4,7 @@ package nsu.mier.backend.DTOs;
 import lombok.Data;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.sql.Date;
 
 @Data
 public class StaffDTO implements Serializable {

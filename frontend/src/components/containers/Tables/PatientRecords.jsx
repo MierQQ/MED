@@ -29,7 +29,9 @@ function PatientRecords() {
             "grouping": "number",
         };
     const relatedTables = ["Patient", "MedicalInstitution", "MedStaff", "HospitalRoom", "Cabinets", "HospitalRoomExpiring"];
-    return <TableTemplate url = "patientRecords" fields = {fields} type = {type} relatedTables={relatedTables}/>;
+    const fieldsUrl = {"patientId": "patient", "medicalInstitutionId": "medicalInstitution", "doctorId": "medStaff",
+        "hospitalRoomId": "hospitalRoom", "cabinet": "cabinets"};
+    return <TableTemplate url = "patientRecords" fields = {fields} type = {type} relatedTables={relatedTables} fieldsUrl = {fieldsUrl} />;
 }
 
 export default PatientRecords;

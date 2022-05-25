@@ -5,7 +5,8 @@ function HospitalRoomExpiring() {
     const fields = ["id", "record", "date"];
     const type = {"id": "number", "record": "number", "date": "date"};
     const relatedTables = ["PatientRecords"];
-    return <TableTemplate url = "hospitalRoomExpiring" fields = {fields} type = {type} relatedTables={relatedTables}/>;
+    const fieldsUrl = {"record": "patientRecords"};
+    return <TableTemplate url = "hospitalRoomExpiring" fields = {fields} type = {type} relatedTables={relatedTables} fieldsUrl = {fieldsUrl} />;
 }
 
 export default HospitalRoomExpiring;

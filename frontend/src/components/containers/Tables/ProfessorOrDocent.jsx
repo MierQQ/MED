@@ -11,7 +11,8 @@ function ProfessorOrDocent() {
             "id": "number"
         };
     const relatedTables = ["MedStaff"];
-    return <TableTemplate url = "professorOrDocent" fields = {fields} type = {type} relatedTables={relatedTables}/>;
+    const fieldsUrl = {"id": "medStaff"};
+    return <TableTemplate url = "professorOrDocent" fields = {fields} type = {type} relatedTables={relatedTables} fieldsUrl = {fieldsUrl}/>;
 }
 
 export default ProfessorOrDocent;

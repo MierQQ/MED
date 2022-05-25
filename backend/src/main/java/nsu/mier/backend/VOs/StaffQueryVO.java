@@ -4,7 +4,7 @@ package nsu.mier.backend.VOs;
 import lombok.Data;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.sql.Date;
 
 @Data
 public class StaffQueryVO implements Serializable {

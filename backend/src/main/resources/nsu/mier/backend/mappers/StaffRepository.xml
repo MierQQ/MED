@@ -10,7 +10,7 @@
         <result column="specialization" jdbcType="VARCHAR" property="specialization"/>
         <result column="salary" jdbcType="INTEGER" property="salary"/>
         <result column="type" jdbcType="VARCHAR" property="type"/>
-        <result column="employment_date" jdbcType="TIMESTAMP" property="employmentDate"/>
+        <result column="employment_date" jdbcType="DATE" property="employmentDate"/>
     </resultMap>
     <sql id="Base_Column_List">
     <!--@JPA.Support generated on 2022-05-11 23:44:39.-->    id, `name`, specialization, salary, `type`, employment_date

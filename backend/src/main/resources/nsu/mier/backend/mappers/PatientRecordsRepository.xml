@@ -10,7 +10,7 @@
         <result column="medical_institution_id" jdbcType="INTEGER" property="medicalInstitutionId"/>
         <result column="data" jdbcType="VARCHAR" property="data"/>
         <result column="type" jdbcType="VARCHAR" property="type"/>
-        <result column="date" jdbcType="TIMESTAMP" property="date"/>
+        <result column="date" jdbcType="DATE" property="date"/>
         <result column="doctor_id" jdbcType="INTEGER" property="doctorId"/>
         <result column="hospital_room_id" jdbcType="INTEGER" property="hospitalRoomId"/>
         <result column="cabinet" jdbcType="INTEGER" property="cabinet"/>

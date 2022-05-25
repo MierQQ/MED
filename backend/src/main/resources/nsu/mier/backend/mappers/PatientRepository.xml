@@ -7,7 +7,7 @@
         <!--@Table patient-->
         <id column="id" jdbcType="INTEGER" property="id"/>
         <result column="name" jdbcType="VARCHAR" property="name"/>
-        <result column="birth_day" jdbcType="TIMESTAMP" property="birthDay"/>
+        <result column="birth_day" jdbcType="DATE" property="birthDay"/>
     </resultMap>
     <sql id="Base_Column_List">
     <!--@JPA.Support generated on 2022-05-11 23:44:28.-->    id, `name`, birth_day

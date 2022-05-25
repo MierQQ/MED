@@ -15,7 +15,8 @@ function ProfOrDocentMedicalInstitution() {
             "medicalInstitutionId": "number"
         };
     const relatedTables = ["ProfessorOrDocent", "MedicalInstitution"];
-    return <TableTemplate url = "profOrDocentMedicalInstitution" fields = {fields} type = {type} relatedTables={relatedTables}/>;
+    const fieldsUrl = {"profOrDocentId": "professorOrDocent", "medicalInstitutionId": "medicalInstitution"};
+    return <TableTemplate url = "profOrDocentMedicalInstitution" fields = {fields} type = {type} relatedTables={relatedTables} fieldsUrl = {fieldsUrl}/>;
 }
 
 export default ProfOrDocentMedicalInstitution;

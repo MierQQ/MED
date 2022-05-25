@@ -14,8 +14,9 @@ function StaffMedicalInstitution() {
             "staffId": "number",
             "medicalInstitutionId": "number"
         };
-    const relatedTables = ["StaffId", "MedicalInstitution"];
-    return <TableTemplate url = "staffMedicalInstitution" fields = {fields} type = {type} relatedTables={relatedTables}/>;
+    const relatedTables = ["Staff", "MedicalInstitution"];
+    const fieldsUrl = {"staffId": "staff", "medicalInstitutionId": "medicalInstitution"};
+    return <TableTemplate url = "staffMedicalInstitution" fields = {fields} type = {type} relatedTables={relatedTables} fieldsUrl = {fieldsUrl}/>;
 }
 
 export default StaffMedicalInstitution;

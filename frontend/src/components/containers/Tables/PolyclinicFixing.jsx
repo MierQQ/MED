@@ -15,7 +15,8 @@ function PolyclinicFixing() {
             "hospitalId": "number",
         };
     const relatedTables = ["Polyclinic", "Hospital"];
-    return <TableTemplate url = "polyclinicFixing" fields = {fields} type = {type} relatedTables={relatedTables}/>;
+    const fieldsUrl = {"polyclinicId": "polyclinic", "hospitalId": "hospital"};
+    return <TableTemplate url = "polyclinicFixing" fields = {fields} type = {type} relatedTables={relatedTables} fieldsUrl = {fieldsUrl}/>;
 }
 
 export default PolyclinicFixing;

@@ -39,65 +39,92 @@ import StaffMedicalInstitution from "./StaffMedicalInstitution";
 
 function TableTemplate(props) {
 
-    const container =
-        {
-            "1": <Query1/>,
-            "2": <Query2/>,
-            "3": <Query3/>,
-            "4": <Query4/>,
-            "5": <Query5/>,
-            "6": <Query6/>,
-            "7": <Query7/>,
-            "8": <Query8/>,
-            "9": <Query9/>,
-            "10": <Query10/>,
-            "11": <Query11/>,
-            "12": <Query12/>,
-            "13": <Query13/>,
-            "14": <Query14/>,
-            "Analyzes": <Analyzes/>,
-            "Patient": <Patient/>,
-            "BuildingBody": <BuildingBody/>,
-            "Cabinets": <Cabinets/>,
-            "Department": <Department/>,
-            "Hospital": <Hospital/>,
-            "HospitalRoom": <HospitalRoom/>,
-            "HospitalRoomExpiring": <HospitalRoomExpiring/>,
-            "LabMedicalInstitution": <LabMedicalInstitution/>,
-            "Laboratory": <Laboratory/>,
-            "MedicalInstitution": <MedicalInstitution/>,
-            "MedStaff": <MedStaff/>,
-            "MedStaffPatient": <MedStaffPatient/>,
-            "OperationStaff": <OperationStaff/>,
-            "PatientRecords": <PatientRecords/>,
-            "Polyclinic": <Polyclinic/>,
-            "PolyclinicFixing": <PolyclinicFixing/>,
-            "ProfessorOrDocent": <ProfessorOrDocent/>,
-            "ProfOrDocentMedicalInstitution": <ProfOrDocentMedicalInstitution/>,
-            "Staff": <Staff/>,
-            "StaffMedicalInstitution": <StaffMedicalInstitution/>,
-        };
+    const container = {
+        "1": <Query1/>,
+        "2": <Query2/>,
+        "3": <Query3/>,
+        "4": <Query4/>,
+        "5": <Query5/>,
+        "6": <Query6/>,
+        "7": <Query7/>,
+        "8": <Query8/>,
+        "9": <Query9/>,
+        "10": <Query10/>,
+        "11": <Query11/>,
+        "12": <Query12/>,
+        "13": <Query13/>,
+        "14": <Query14/>,
+        "Analyzes": <Analyzes/>,
+        "Patient": <Patient/>,
+        "BuildingBody": <BuildingBody/>,
+        "Cabinets": <Cabinets/>,
+        "Department": <Department/>,
+        "Hospital": <Hospital/>,
+        "HospitalRoom": <HospitalRoom/>,
+        "HospitalRoomExpiring": <HospitalRoomExpiring/>,
+        "LabMedicalInstitution": <LabMedicalInstitution/>,
+        "Laboratory": <Laboratory/>,
+        "MedicalInstitution": <MedicalInstitution/>,
+        "MedStaff": <MedStaff/>,
+        "MedStaffPatient": <MedStaffPatient/>,
+        "OperationStaff": <OperationStaff/>,
+        "PatientRecords": <PatientRecords/>,
+        "Polyclinic": <Polyclinic/>,
+        "PolyclinicFixing": <PolyclinicFixing/>,
+        "ProfessorOrDocent": <ProfessorOrDocent/>,
+        "ProfOrDocentMedicalInstitution": <ProfOrDocentMedicalInstitution/>,
+        "Staff": <Staff/>,
+        "StaffMedicalInstitution": <StaffMedicalInstitution/>,
+    };
 
     let [data, setData] = useState([]);
     let [toSave, setToSave] = useState({});
     let [toDelete, setToDelete] = useState(null);
     let [toUpdate, setToUpdate] = useState({});
+    let [toShow, setToShow] = useState({});
     let [toSearch, setToSearch] = useState("");
     let [keyTables, setKeyTables] = useState([]);
+    let [info, setInfo] = useState({});
     let [maxId, setMaxId] = useState("");
+    let [init, setInit] = useState(false);
+
+    const getByURL = (url, id) => {
+        axios.get('/' + url + "/" + id).then((response) => {
+            setToShow(response.data);
+        }).catch((error) => {
+            console.log(error);
+        })
+    }
+
+    const getByURLForSell = (url, id, selfId, key) => {
+        axios.get('/' + url + "/" + id).then((response) => {
+            if (!info.hasOwnProperty(selfId) ){
+                info[selfId] = {};
+            }
+            info[selfId][key] = response.data;
+            setInfo(Object.assign({}, info));
+        }).catch((error) => {
+            console.log(error);
+        })
+    }
 
     const getAll = () => {
         axios.get('/' + props.url).then((response) => {
             setData(response.data);
-
             setMaxId(response.data.reduce((acc, value) => {
                 return acc > parseInt(value.id) ? acc : parseInt(value.id)
             }, -1) + 1);
+            if (props.hasOwnProperty("fieldsUrl")) {
+                response.data.forEach((value) => {
+                    for (let key in props.fieldsUrl) {
+                        getByURLForSell(props.fieldsUrl[key], value[key], value.id, key);
+                    }
+                })
+            }
         }).catch((error) => {
             console.log(error)
         })
     }
-
 
     const search = () => {
         if (toSearch === "") {
@@ -140,104 +167,134 @@ function TableTemplate(props) {
         })
     }
 
-    return (
-        <div className={"tableHolder"}>
-            <div className="inputs-container">
-                <div>Update</div>
-                {props.fields.map((value, key) => (
-                    <div className="input-container">
-                        <label className="input-label">{value.replace(/([A-Z]+)*([A-Z][a-z])/g, "$1 $2")}</label>
-                        <input type={props.type[value]} value={toUpdate[value]} onChange={(e) => {
-                            toUpdate[value] = e.target.value;
-                            setToUpdate(Object.assign({}, toUpdate));
-                        }}/>
-                    </div>
-                ))}
-                <div className="input-container">
-                    <button className="search-button" onClick={update}>Update</button>
-                    <button className="search-button" onClick={deleteById}>Delete</button>
+    const show = () => {
+        let result = [];
+        for (let key in toShow) {
+            result.push(
+                <div>
+                    <label>{key.replace(/([A-Z]+)*([A-Z][a-z])/g, "$1 $2")} : {toShow[key] + ""}</label>
                 </div>
-            </div>
-            <div className="inputs-container">
-                <div>Search</div>
-                <div className="input-container">
-                    <label className="input-label">id</label>
-                    <input onChange={(e) => {
-                        setToSearch(e.target.value)
-                    }}/>
-                </div>
-                <div className="input-container">
-                    <button className="search-button" onClick={search}>Search</button>
-                </div>
-            </div>
-            <div>
-                <table className="table">
-                    <thead>
-                    <tr>
-                        {props.fields.map((value, key) => (<th>{value.replace(/([A-Z]+)*([A-Z][a-z])/g, "$1 $2")}</th>))}
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {data.sort((a, b) => {
-                        return a.id - b.id
-                    }).map((value, key) =>
-                        <tr className={toDelete !== value.id ? "tr" : "trToDelete"} onClick={() => {
-                            setToDelete(value.id);
-                            setToUpdate(Object.assign({}, value));
-                        }}>
-                            {props.fields.map((index, k) => (<th>{value[index]}</th>))}
-                        </tr>
-                    )}
-                    <tr>
-                        {props.fields.map((value, key) => (
-                            <th>
-                                <input type={props.type[value]} placeholder={value === "id" ? maxId : ""}
-                                       onChange={(e) => {
-                                           let newValueOfToSave = toSave;
-                                           newValueOfToSave[value] = e.target.value;
-                                           setToSave(newValueOfToSave);
-                                       }}/>
-                            </th>
-                        ))}
-                    </tr>
-                    </tbody>
-                </table>
-                <div className="input-container">
-                    <button className="search-button" onClick={save}>Save</button>
-                </div>
-            </div>
+            );
+        }
+        return result;
+    }
 
-            {
-                props.hasOwnProperty("relatedTables") ?
-                    <div>
-                        <div>Foreign key tables</div>
-                        {
-                            props.relatedTables.map((value, key) => (
-                                <button className="search-button" onClick={() => {
-                                    let newKeyTable = {};
-                                    newKeyTable[value] = !keyTables.hasOwnProperty(value) || !keyTables[value];
-                                    setKeyTables(Object.assign({}, newKeyTable));
-                                }}>{value.replace(/([A-Z]+)*([A-Z][a-z])/g, "$1 $2")}</button>
-                            ))
-                        }
-                        {
-                            props.relatedTables.map((value, key) => (
-                                <div>
-                                    {
-                                        keyTables.hasOwnProperty(value) && keyTables[value] ?
-                                            <div>
-                                                <div>{value}</div>
-                                                {container[value]}
-                                            </div> : <div/>
-                                    }
-                                </div>
-                            ))
-                        }
-                    </div> : <div></div>
-            }
+    const showInfo = (obj) => {
+        let result = [];
+        for (let key in obj) {
+            result.push(
+                <div>
+                    <label>{key.replace(/([A-Z]+)*([A-Z][a-z])/g, "$1 $2")} : {obj[key] + ""}</label>
+                </div>
+            );
+        }
+        return result;
+    }
 
+    if (!init) {
+        getAll();
+        setInit(true);
+    }
+
+    const getCell = (id, val) => {
+        if (info.hasOwnProperty(id)) {
+            if (info[id].hasOwnProperty(val))
+            return <div>{showInfo(info[id][val])}</div>;
+        }
+        return null;
+    }
+
+    return (<div className={"tableHolder"}>
+
+        <div className="inputs-container">
+            <div>Update</div>
+            {props.fields.map((value, key) => (<div className="input-container">
+                <label className="input-label">{value.replace(/([A-Z]+)*([A-Z][a-z])/g, "$1 $2")}</label>
+                <input type={props.type[value]} value={toUpdate[value]} onChange={(e) => {
+                    toUpdate[value] = e.target.value;
+                    setToUpdate(Object.assign({}, toUpdate));
+                }}/>
+            </div>))}
+            <div className="input-container">
+                <button className="search-button" onClick={update}>Update</button>
+                <button className="search-button" onClick={deleteById}>Delete</button>
+            </div>
         </div>
-    )
+        <div className="inputs-container">
+            <div>Search</div>
+            <div className="input-container">
+                <label className="input-label">id</label>
+                <input onChange={(e) => {
+                    setToSearch(e.target.value)
+                }}/>
+            </div>
+            <div className="input-container">
+                <button className="search-button" onClick={search}>Search</button>
+            </div>
+        </div>
+
+        <div>
+            {show()}
+        </div>
+
+        <div>
+            <table className="table">
+                <thead>
+                <tr>
+                    {props.fields.map((value, key) => (
+                        <th>{value.replace(/([A-Z]+)*([A-Z][a-z])/g, "$1 $2")}</th>))}
+                </tr>
+                </thead>
+                <tbody>
+                {data.sort((a, b) => {
+                    return a.id - b.id
+                }).map((value, key) => <tr className={toDelete !== value.id ? "tr" : "trToDelete"} onClick={() => {
+                    setToDelete(value.id);
+                    setToUpdate(Object.assign({}, value));
+                }}>
+                    {props.fields.map((index, k) => (<th className={getCell(value.id, index) === null ? "" : "tableCellWithObject"} onClick={() => {
+                        if (props.hasOwnProperty("fieldsUrl") && props.fieldsUrl.hasOwnProperty(index)) {
+                            getByURL(props.fieldsUrl[index], value[index]);
+                        }
+                    }}>
+                        {
+                            getCell(value.id, index) === null ? value[index] + "" : getCell(value.id, index)
+                        }
+                    </th>))}
+                </tr>)}
+                <tr>
+                    {props.fields.map((value, key) => (<th>
+                        <input type={props.type[value]} placeholder={value === "id" ? maxId : ""}
+                               onChange={(e) => {
+                                   let newValueOfToSave = toSave;
+                                   newValueOfToSave[value] = e.target.value;
+                                   setToSave(newValueOfToSave);
+                               }}/>
+                    </th>))}
+                </tr>
+                </tbody>
+            </table>
+            <div className="input-container">
+                <button className="search-button" onClick={save}>Save</button>
+            </div>
+        </div>
+
+        {props.hasOwnProperty("relatedTables") ? <div>
+            <div>Foreign key tables</div>
+            {props.relatedTables.map((value, key) => (<button className="search-button" onClick={() => {
+                let newKeyTable = {};
+                newKeyTable[value] = !keyTables.hasOwnProperty(value) || !keyTables[value];
+                setKeyTables(Object.assign({}, newKeyTable));
+            }}>{value.replace(/([A-Z]+)*([A-Z][a-z])/g, "$1 $2")}</button>))}
+            {props.relatedTables.map((value, key) => (<div>
+                {keyTables.hasOwnProperty(value) && keyTables[value] ? <div>
+                    <div>{value}</div>
+                    {container[value]}
+                </div> : <div/>}
+            </div>))}
+        </div> : <div></div>}
+
+    </div>)
 }
 
 export default TableTemplate;
