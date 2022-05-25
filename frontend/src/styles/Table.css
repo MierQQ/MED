@@ -1,3 +1,13 @@
 .table {
     margin: 1% 2%;
 }
+
+.tr:hover {
+    background: #f3bd48; /* Цвет фона при наведении */
+    color: #fff; /* Цвет текста при наведении */
+}
+
+.trToDelete {
+    background: white; /* Цвет фона при наведении */
+    color: black; /* Цвет текста при наведении */
+}

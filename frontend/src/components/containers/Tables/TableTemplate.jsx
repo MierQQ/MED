@@ -63,47 +63,18 @@ function TableTemplate(props) {
     return (
         <div>
             <div className="inputs-container">
-                <div>Save</div>
-                {props.fields.map((value, key) => (
-                    <div className="input-container">
-                        <label className="input-label">{value}</label>
-                        <input onChange={(e) => {
-                            let newValueOfToSave = toSave;
-                            newValueOfToSave[value] = e.target.value;
-                            setToSave(newValueOfToSave);
-                        }}/>
-                    </div>
-                ))}
-                <div className="input-container">
-                    <button className="search-button" onClick={save}>Save</button>
-                </div>
-            </div>
-            <div className="inputs-container">
                 <div>Update</div>
                 {props.fields.map((value, key) => (
                     <div className="input-container">
                         <label className="input-label">{value}</label>
-                        <input onChange={(e) => {
-                            let newValueOfToUpdate = toUpdate;
-                            newValueOfToUpdate[value] = e.target.value;
-                            setToUpdate(newValueOfToUpdate);
+                        <input value={toUpdate[value]} onChange={(e) => {
+                            toUpdate[value] = e.target.value;
+                            setToUpdate(Object.assign({}, toUpdate));
                         }}/>
                     </div>
                 ))}
                 <div className="input-container">
                     <button className="search-button" onClick={update}>Update</button>
-                </div>
-            </div>
-            <div className="inputs-container">
-                <div>Delete</div>
-                <div className="input-container">
-                    <label className="input-label">id</label>
-                    <input onChange={(e) => {
-                        setToDelete(e.target.value)
-                    }}/>
-                </div>
-                <div className="input-container">
-                    <button className="search-button" onClick={deleteById}>Delete</button>
                 </div>
             </div>
             <div className="inputs-container">
@@ -124,9 +95,9 @@ function TableTemplate(props) {
                     </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            {props.fields.map((index, k) => (<th>{dataSearch[index]}</th>))}
-                        </tr>
+                    <tr>
+                        {props.fields.map((index, k) => (<th>{dataSearch[index]}</th>))}
+                    </tr>
                     </tbody>
                 </table>
             </div>
@@ -138,13 +109,33 @@ function TableTemplate(props) {
                     </tr>
                     </thead>
                     <tbody>
-                    {data.map((value, key) =>
-                        <tr>
+                    {data.sort((a, b) => {return a.id - b.id}).map((value, key) =>
+                        <tr className={toDelete !== value.id ? "tr" : "trToDelete"} onClick={() => {
+                            setToDelete(value.id);
+                            setToUpdate(Object.assign({}, value));
+                        }}>
                             {props.fields.map((index, k) => (<th>{value[index]}</th>))}
                         </tr>
                     )}
+                    <tr>
+                        {props.fields.map((value, key) => (
+                            <th>
+                                <input onChange={(e) => {
+                                    let newValueOfToSave = toSave;
+                                    newValueOfToSave[value] = e.target.value;
+                                    setToSave(newValueOfToSave);
+                                }}/>
+                            </th>
+                        ))}
+                    </tr>
                     </tbody>
                 </table>
+                <div className="input-container">
+                    <button className="search-button" onClick={save}>Save</button>
+                </div>
+                <div className="input-container">
+                    <button className="search-button" onClick={deleteById}>Delete</button>
+                </div>
             </div>
         </div>
     )
